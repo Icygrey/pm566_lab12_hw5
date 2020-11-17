@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Tao Huang" />
+
+
+<title>Assignment 5-Midterm project visualization</title>
+
+<script src="site_libs/jquery-1.12.4/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+<link href="site_libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+<script src="site_libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="site_libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="site_libs/Proj4Leaflet-1.0.1/proj4-compressed.js"></script>
+<script src="site_libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="site_libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+<script src="site_libs/leaflet-binding-2.0.3/leaflet.js"></script>
+<script src="site_libs/leaflet-providers-1.9.0/leaflet-providers_1.9.0.js"></script>
+<script src="site_libs/leaflet-providers-plugin-2.0.3/leaflet-providers-plugin.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+      </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">PM566 Final Project</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Lab-12</a>
+</li>
+<li>
+  <a href="HW5.html">HW-5</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/USCbiostats/PM566">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://elastic-khorana-70231e.netlify.app/">PM566 Home</a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Assignment 5-Midterm project visualization</h1>
+<h4 class="author">Tao Huang</h4>
+
+</div>
+
+
+<p><br></p>
+<p>This is my assignment-5.</p>
+<p><br></p>
+<style type="text/css">
+.code-r { /* Code block */
+  font-size: 15px;
+}
+
+.code-r-small { /* Code block */
+  font-size: 10px;
+}
+</style>
+<p><br></p>
+<p><br></p>
+<p><br></p>
+<div id="table" class="section level2 tabset">
+<h2>table</h2>
+<div id="scatterplot-without-dc" class="section level3">
+<h3>Scatterplot: without DC</h3>
+<div id="htmlwidget-beecae66ea0b5eea8b8b" style="width:700px;height:415.296px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-beecae66ea0b5eea8b8b">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Stamen.Toner",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addCircleMarkers","args":[[35.196467,35.568924,35.418624,35.754264,35.3464,34.843183,35.178493,34.810422,35.723529,35.73311,35.637717,35.263374,34.840174,35.633765,35.678053,35.050872,35.481604,35.126049,35.29931,35.58496,35.643632,35.710558,35.703491,35.3874,35.3441,35.3965,35.4516,35.2421,35.5217,35.3516,35.1269,35.3734,35.1091,35.3821,35.023791,35.16675,35.018887,35.291223,34.971263,34.931747,35.640156,35.219588,35.6225,34.857685,35.129115,34.481366,34.029122,34.151007,34.497963,34.083961,34.029571,34.193482,34.535644,34.275218,34.068331,34.134186,34.241478,33.867577,33.919783,33.934033,34.119421,33.333921,34.040819,34.138622,34.014825,34.082841,34.057144,34.098692,33.980058,33.966323,33.888021,34.11298,34.078543,34.044747,34.595497,34.03815,34.153532,34.08524,34.058936,34.1879,34.042513,34.13747,34.208098,34.454977,33.837391,34.07124,34.610162,34.016399,34.052715,33.932641,33.867752,34.256617,34.041277,34.06146,34.125904,34.038941,33.996345,33.892938,34.054301,34.090264,34.100802,34.023057,34.049595,33.963116,34.005798,33.922831,33.989764,34.764411,34.590253,33.999164,33.937862,34.044724,34.16094,34.135207,34.088091,34.09217,33.922235,34.032673,34.161732,33.894857,33.927445,34.082177,33.888441,34.073948,33.916898,34.081112,34.674457,34.078256,34.092694,34.155925,34.026624,34.018599,34.038691,33.93256,33.974897,33.894352,34.118242,34.181933,34.144935,33.951267,34.291056,33.950734,34.000107,34.069715,33.781993,33.866487,33.78262,34.043582,33.981859,33.830337,33.914649,33.865241,34.689335,34.163749,34.112134,34.070245,34.100299,34.120516,33.979987,33.983083,34.017494,33.956529,34.112113,34.02425,34.310296,34.054588,34.209689,34.232152,33.96025,33.90251,34.032209,33.740218,34.120692,33.997128,34.043401,34.198949,34.661878,34.620978,34.238237,34.274649,33.84707,34.693444,33.888463,34.006034,33.938019,34.62562,34.081157,34.094457,34.065378,34.046994,34.531079,34.463499,34.534363,34.49129,33.793312,33.805559,34.036097,34.131749,33.923954,34.03684,33.967273,34.091814,33.889428,34.013245,33.972411,33.976535,33.98852,34.082723,34.049526,34.059456,34.266942,34.165036,34.015436,34.049708,34.099553,34.34704,34.238739,34.190006,34.765963,34.03608,34.115475,34.237368,33.90687,34.046284,34.265724,34.144344,34.089984,34.594429,34.023755,33.787212,33.78358,34.224297,33.89765,34.069731,34.159752,34.494142,34.035291,33.990124,34.045762,33.961018,33.979496,34.058481,34.279694,34.65244,33.858301,33.75538,34.036458,33.857406,34.03281,34.198926,34.21498,34.036336,33.760022,33.778407,34.733315,34.068882,33.904692,33.893472,33.898562,33.96744,34.108201,34.288671,34.094844,34.012262,34.122367,34.139229,33.736684,34.400323,33.384064,34.41748,33.933048,34.023052,34.087782,34.477689,34.47789,34.254439,34.15242,34.168709,33.803005,34.095701,34.498972,34.056936,34.049352,33.944713,33.999717,34.11024,34.047555,33.933626,34.526511,34.042791,34.376825,34.137441,34.227522,34.572624,34.255065,34.010388,34.058007,34.313096,34.156974,34.102167,34.069826,34.102003,34.15055,34.166653,34.159662,33.834625,34.25113,34.31406,34.323635,34.108069,34.123231,34.145326,33.879439,34.15187,34.075619,33.982584,34.12409,34.063425,33.968138,34.15532,33.911054,33.947844,34.144207,34.123033,34.614211,34.05647,34.041949,34.057291,34.003624,34.068093,34.027991,34.444032,34.469938,34.04005,34.182525,34.163461,34.201032,33.993791,33.968255,33.999376,33.954326,34.001902,34.000396,34.044,33.984966,33.995555,34.033461,33.968237,33.940452,34.035815,34.035612,34.760448,33.825207,34.055423,34.211472,34.088278,34.040753,34.043568,33.890237,34.000114,33.976609,33.952357,33.776376,34.192708,34.057208,34.136925,34.065931,34.625588,33.967844,34.033775,34.041547,33.916576,33.785869,34.068376,34.213111,33.90952,34.16635,33.56846,33.836111,33.916475,33.867404,33.663844,33.595833,33.816937,33.467458,33.720285,33.871972,33.77322,33.692778,33.686502,33.926246,33.846322,33.550805,33.542719,33.591643,33.529249,33.61017,33.656746,33.803201,33.7447,33.602,33.61799,33.807614,33.881894,33.6,33.627933,33.788889,33.437778,33.506334,33.740833,33.759167,33.74611,33.79474,33.665508,33.733512,33.814006,33.746996,33.890894,34.591254,34.145833,34.500831,35.275833,34.459167,34.895796,34.261118,34.243896,34.133889,34.07029,34.244027,34.012235,33.989819,34.073902,34.241951,34.86215,34.267411,34.092234,34.088333,34.033903,34.240833,34.743889,34.426389,34.128344,34.933333,34.126721,34.248333,34.266111,34.048347,34.443889,34.259167,34.062589,34.07751,34.046955,34.236111,34.154167,34.806179,34.827778,34.045,34.434038,34.063344,34.598889,34.426288,34.157222,34.429272,34.106399,34.055569,34.1064,34.22955,34.207786,34.108345,34.243333,35.765278,34.135556,34.238889,34.09751,34.536218,34.360834,34.905,34.033625,34.114174],[-118.845976,-118.508875,-119.47438,-119.304631,-118.875922,-119.206571,-119.556497,-118.990444,-118.729746,-118.504448,-118.51853,-118.930775,-118.934489,-119.709567,-119.284618,-119.423844,-119.294577,-119.468953,-119.364401,-119.406818,-118.384148,-118.511663,-118.836405,-119.0169,-119.0285,-118.982,-118.7898,-118.9762,-118.9063,-119.0576,-119.1856,-119.1274,-119.0227,-119.2088,-118.194488,-117.879958,-117.670056,-118.628869,-117.862804,-117.908625,-117.805113,-118.562992,-117.670833,-118.219949,-118.447687,-118.216138,-118.302397,-118.760876,-118.32381,-118.135504,-118.362349,-118.135675,-118.133856,-118.279007,-118.251986,-118.037297,-118.431775,-118.08063,-118.273697,-118.302483,-118.258308,-118.331354,-117.990979,-117.912351,-118.356095,-117.972142,-117.977406,-118.460296,-118.179783,-118.155014,-118.127136,-118.424404,-118.402109,-118.394492,-118.363392,-118.20533,-117.968387,-118.485909,-118.336327,-118.323487,-118.381794,-118.668881,-118.600829,-118.434197,-118.255878,-118.372894,-118.628355,-118.258141,-118.419399,-118.267985,-118.068587,-118.596089,-118.408801,-118.240969,-117.715319,-118.356007,-118.151914,-118.22753,-118.325579,-117.881821,-117.865044,-118.335877,-118.378658,-118.183118,-118.396806,-118.372296,-118.424311,-118.284121,-118.153557,-117.81613,-118.131148,-118.257803,-117.950531,-118.205209,-117.835314,-118.292538,-117.984485,-118.169189,-118.082551,-118.195596,-117.994826,-118.255001,-118.334992,-118.029074,-118.402004,-118.177515,-118.386954,-118.240334,-118.237642,-118.501697,-118.349778,-118.297919,-118.371706,-118.286739,-118.267376,-118.307231,-118.231508,-118.246803,-117.846736,-118.309409,-118.504152,-118.263144,-117.978311,-118.32887,-118.296386,-118.29466,-118.304543,-118.304644,-118.298016,-118.072804,-118.347694,-118.396435,-117.755031,-118.661203,-118.187118,-118.271077,-118.35386,-118.346365,-118.216706,-118.328048,-117.926756,-118.344474,-117.963631,-118.322769,-118.37001,-118.304346,-118.200156,-118.235266,-117.950975,-118.00932,-117.953338,-118.302255,-117.770312,-118.374062,-118.334892,-118.498229,-118.429088,-117.87071,-118.651748,-118.37398,-118.122171,-118.175352,-118.353156,-118.32453,-118.358601,-118.306794,-118.205364,-118.304855,-118.300377,-118.241598,-117.97807,-117.919259,-117.897777,-117.744875,-118.317456,-118.161014,-118.343548,-118.299672,-118.201664,-118.784201,-118.311191,-118.508629,-118.397059,-118.436957,-118.460393,-118.447659,-118.187662,-118.334586,-118.353944,-118.353469,-118.457528,-117.992121,-118.110797,-118.13253,-118.216378,-118.526491,-118.478218,-118.390769,-118.141748,-118.006976,-118.079216,-118.52853,-118.082884,-118.531425,-118.416768,-117.703588,-118.548762,-118.105685,-118.412847,-118.397292,-118.344627,-118.444601,-118.165144,-118.355627,-118.138912,-117.898903,-118.03015,-118.088735,-118.280491,-118.446368,-118.414497,-117.762596,-118.557024,-118.218626,-118.218433,-118.363522,-118.429114,-118.376656,-118.38321,-118.538571,-118.552574,-118.387153,-118.347168,-118.350807,-117.961701,-118.082271,-118.249875,-118.274921,-118.260993,-117.871842,-117.808944,-118.436238,-118.099093,-117.904177,-118.113237,-118.102533,-118.284679,-118.402642,-118.437421,-118.496479,-118.062518,-118.481816,-118.740912,-118.478866,-118.430213,-118.359629,-118.439071,-118.050332,-118.168269,-118.270242,-118.084149,-118.374921,-118.048315,-118.192526,-118.274297,-118.157289,-118.088033,-118.031191,-118.032536,-118.342305,-118.607267,-118.389205,-118.355481,-117.937941,-118.329287,-118.060407,-118.343701,-118.447155,-118.549107,-118.057952,-118.26774,-118.304431,-118.357673,-118.35844,-118.357555,-118.341633,-118.288497,-118.610637,-118.000747,-118.017067,-117.897148,-117.967764,-118.093345,-117.70912,-117.875822,-118.412269,-117.993289,-118.060454,-118.244629,-117.848888,-118.330502,-117.959311,-117.746463,-118.003247,-118.015688,-117.820557,-118.027068,-118.456949,-118.025917,-118.168371,-118.278835,-118.673426,-118.560379,-117.930106,-118.426504,-118.395153,-118.462798,-118.462067,-118.294776,-118.298043,-118.282068,-118.210583,-118.251565,-118.32462,-118.348176,-118.348359,-117.859319,-118.22195,-118.241149,-118.333492,-118.307847,-118.580785,-118.292604,-117.911288,-118.63607,-118.371765,-118.450481,-117.958787,-118.262956,-118.300192,-118.068907,-118.40607,-118.356806,-118.661948,-118.272224,-118.822005,-118.438137,-118.171417,-118.018806,-118.061967,-118.233106,-118.251505,-118.253276,-118.295338,-118.575929,-118.365742,-118.604522,-117.726298,-117.889722,-117.900292,-117.998139,-117.904743,-117.587778,-118.036851,-117.698912,-117.956243,-117.925205,-117.940639,-118.000278,-117.8436,-117.965359,-118.046139,-117.654344,-117.785357,-117.69866,-117.74145,-117.725116,-117.708689,-118.071889,-117.987,-117.730609,-117.940778,-117.887465,-117.885835,-117.61,-117.630248,-118.079722,-117.620278,-117.683894,-117.881389,-118.0825,-117.63611,-118.010462,-117.586986,-117.836714,-117.822072,-118.029078,-117.834681,-117.560861,-116.9825,-117.185876,-116.065833,-117.450278,-117.017283,-116.84503,-116.911422,-114.369722,-117.39588,-117.216863,-117.688944,-117.732585,-117.313655,-117.285599,-116.886523,-116.947186,-117.435048,-116.920278,-117.313654,-117.077222,-117.324444,-117.300878,-117.208651,-117.2,-116.338749,-117.189167,-116.392222,-117.261153,-116.966944,-117.499167,-117.124574,-117.689778,-116.580847,-117.66,-117.344167,-114.619621,-116.6875,-116.949444,-117.434696,-117.650888,-117.334167,-117.572563,-116.494722,-117.650052,-117.593108,-117.182538,-117.370324,-117.225666,-117.109205,-117.289765,-116.828889,-117.382778,-116.054167,-117.233611,-117.648388,-117.292764,-117.633388,-116.820278,-117.043086,-116.432235],15,null,null,{"interactive":true,"className":"","stroke":false,"color":["#FFD7C9","#FFFFFF","#FFFCFA","#FFBAA4","#FFFFFF","#FFFFFF","#FFFFFF","#FFFEFE","#FFFFFF","#FFFFFE","#FFFEFD","#FFE1D6","#FFFFFE","#FFFCFB","#FFE1D7","#FFFEFE","#FFD8CA","#FFF0EA","#FFFFFF","#FFCDBC","#FFFFFF","#FFFFFE","#FFFFFF","#FFEDE6","#FFBAA4","#FFD0BF","#FF9B7E","#FF6D4C","#FFD4C5","#FFB9A3","#FFD1C1","#FFD0C0","#FFB49D","#FFE7DF","#FFFDFD","#FFFBFA","#FFFFFF","#FFFFFF","#FFFFFE","#FFFFFF","#FFFFFF","#FFFFFF","#FFFBFA","#FFF6F3","#FFDCD0","#FFFDFC","#FFF6F3","#FFF9F7","#FFFEFE","#FFD6C7","#FFF3EF","#FFE8DF","#FFFEFE","#FFFFFF","#FFFDFC","#FFEEE8","#FFCFBF","#FFF3EF","#FFF7F5","#FFCEBD","#FFF8F5","#FFFFFF","#FFF6F2","#FFCDBC","#FFEBE4","#FF9C7F","#FFEAE2","#FFFCFB","#FFCBBA","#FFBEA9","#FFB199","#FFFBF9","#FFE9E1","#FFFAF8","#FFFFFF","#FF6F4D","#FFFFFE","#FFF5F2","#FFFFFF","#FFCAB8","#FFFBF9","#FFF6F3","#FFC0AB","#FFFAF8","#FFC3AF","#FFF8F5","#FFBEA8","#FFB9A3","#FFFBFA","#FFD0BF","#FFECE6","#FFE9E1","#FFFCFB","#FFFBFA","#FFF2EE","#FFF5F2","#FFECE6","#FF7857","#FFF3EE","#FFD2C2","#FFF5F1","#FFF5F2","#FFF9F7","#FFDCCF","#FFF3EE","#FFFDFC","#FFF4EF","#FFFEFE","#FFFDFD","#FFEDE7","#FF7352","#FFE5DB","#FFEDE6","#FFEAE2","#FFFFFF","#FFEBE4","#FFFCFB","#EC0C03","#FFFCFB","#FFEAE2","#FFFCFB","#FFF7F4","#FFFAF8","#FF6A49","#FFFBF9","#FFD6C8","#FFFFFF","#FFFCFB","#FFF6F3","#FFEAE3","#FFFDFC","#FFD4C5","#FFFEFD","#FFF5F2","#FFB49C","#FFD7C9","#FFE8E0","#FF7D5C","#FFD7C9","#FFF7F4","#FFD7C9","#FFE1D6","#FFDDD1","#FFF7F4","#FFEFE9","#FFDFD3","#FFFEFE","#FFEDE7","#FFCBB9","#FFEEE8","#FFC0AC","#FFF8F5","#FFFFFF","#FFFFFF","#FFDBCE","#FFF1EC","#FFD7C9","#FFF5F2","#FF9F83","#FFE6DC","#FFFEFE","#FFA084","#FFFDFC","#FFF7F4","#FFFEFD","#FFDACC","#FFF9F7","#FFF8F6","#FFFEFD","#FFE4DA","#FFCDBC","#FFFDFC","#FFEFE9","#FFFCFB","#FFFCFB","#FFDDD0","#FFFFFF","#FFF7F4","#FFFEFE","#FFEDE7","#FFD5C6","#FF8869","#FFEBE3","#FFF5F1","#FFE9E1","#FFFEFE","#FFDCD0","#FFF3EE","#FFEFE9","#FFFCFB","#FFFCFB","#FFFEFE","#FFFCFB","#FFFFFF","#FFF7F5","#000000","#FFFBFA","#FFF8F6","#FF9273","#FFFCFB","#FFF9F7","#FFFEFE","#FFF3EF","#FFF5F1","#FFFEFD","#FFFDFC","#FFD1C0","#FFC0AC","#FFF6F3","#FFF9F7","#FFE4DB","#FFE7DE","#FFB49C","#FFE0D5","#FFEDE7","#FFFFFE","#FFC3AF","#FF7857","#FFFEFE","#FFF8F6","#FFF4EF","#FFD0BF","#FF9273","#FFFBF9","#FF8A6B","#FFFFFF","#FFFEFE","#FF6E4D","#FFEDE7","#FFFCFB","#FFFFFF","#FF9C7F","#FFB198","#FFFBFA","#FFAC93","#FFFEFE","#FFFEFE","#FFAF96","#FFC6B3","#FFFEFE","#FFFBF9","#FF3118","#FFF2EE","#FFF9F7","#FFFDFC","#FFF5F2","#FFFCFB","#FFEDE6","#FFFEFE","#FFB69F","#FFFBFA","#FFFEFD","#FFFFFF","#FFFEFD","#FFFFFE","#FFE5DB","#FFFEFE","#FFFEFE","#FFFCFA","#FFE9E0","#FFEEE7","#FFDFD4","#FFEAE3","#FFE7DE","#FFFCFB","#FFFFFF","#FFC1AC","#FFFFFF","#FFFEFE","#FF8767","#FFEDE6","#FFE2D8","#FFFBFA","#FFFEFE","#FFFFFF","#FFFDFC","#FFDBCE","#FFFCFC","#FFF6F3","#FFEBE3","#FFFFFF","#FFFBFA","#FFE5DC","#FF6745","#FFBDA8","#FFF6F2","#FFF9F7","#FFC3AF","#FFFFFE","#FFFAF9","#FFF9F7","#FFF7F4","#FFC8B6","#FFFAF8","#FFF0EA","#FFFDFD","#FFFFFF","#FF9071","#FFE8E0","#FFEEE8","#FFD8CA","#FFF9F7","#FFFCFA","#FFFEFE","#FFFEFE","#FFD0C0","#FFEEE8","#FFFFFE","#FFFFFF","#FFFCFB","#FFEEE8","#FFFFFF","#FFFEFE","#FFFEFE","#FFF1EB","#FFFFFF","#FFFAF8","#FFFFFF","#FF8D6E","#FFFFFE","#FFFDFC","#FFFFFF","#FFFEFE","#FFFCFB","#FFFEFE","#FFFFFE","#FFFCFB","#FFFEFD","#FFFDFC","#FFFDFD","#FFDACD","#FFFCFB","#FFFDFD","#FFE6DE","#FFE9E1","#FFEEE7","#FF997C","#FFF6F2","#FFE8E0","#FFF4F0","#FFC2AD","#FFFFFF","#FF9C7F","#FFF8F6","#FFFEFD","#FFFAF9","#FFF6F3","#FFE8E0","#FFC0AB","#FFFBFA","#FFE2D8","#FFFFFF","#FFF1EC","#FFA084","#FFEDE6","#FFECE6","#FFEFE9","#FFF2EE","#FFFEFE","#FFB39B","#FFDFD4","#FFF1EC","#FFFFFF","#FFFFFF","#FFB39A","#FFFEFD","#FFF2ED","#FFFEFD","#FFB59D","#FFFFFF","#FFB299","#FFD0C0","#FFC6B3","#FFDCCF","#FFD5C7","#FFFBFA","#FFE0D4","#FFF3EE","#711A0C","#FFEFE9","#FFCEBD","#FFC5B1","#FFFEFD","#FFEDE7","#FFF6F3","#FFEFE9","#FFAC93","#FF9F82","#FFB29A","#FFC9B6","#FFD1C1","#FFFAF8","#FFFAF7","#FFF8F5","#FFF5F1","#FFF1EC","#FFFDFC","#FFE4DA","#FFF9F6","#FFFBFA","#FFE4DA","#FFDBCE","#FFAF96","#FFE1D6","#FFFDFC","#FFF4F0","#FFFDFC","#FFEEE8","#FFEDE7","#451609","#FFF6F3","#FFFEFD","#FFEAE2","#FFF9F6","#FFD5C7","#FFFDFD","#FFDDD2","#FFE7DF","#FFDDD1","#FFFFFF","#FFD8CA","#FFFFFE","#FFFFFF","#FFF5F1","#FFFDFD","#FFFDFC","#FFFFFF","#FFD8CA","#FFFFFF","#FF8969","#FFE0D5","#FFBAA3","#FFFDFC","#FFFFFF","#FFFFFF","#BA1909","#FFFFFF","#FFF5F1","#FFFFFF","#FFFDFC","#FFBBA5","#FFCEBE","#FFFFFF","#FFFCFB","#FFFEFD","#FFFFFF","#FFEDE7","#FFFEFE","#FFFFFE","#FFF7F4","#FFD5C7","#FFFEFD","#FFFFFF","#FFFEFE","#FFFDFC","#FFFFFF","#FFFFFF","#FFF9F7","#FF4829","#FFFFFE","#FFF8F5","#FFFFFF","#FFFDFC","#FF9E82","#FFC4B1","#FF8565","#FFFFFF","#FFFEFE","#811B0C","#FFFFFE","#FFFFFF","#FFFCFB","#FFFFFF","#FFD1C0","#FF8A6A","#FFFEFE","#FFFFFE","#FFDDD1","#FFF8F5"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["#FFD7C9","#FFFFFF","#FFFCFA","#FFBAA4","#FFFFFF","#FFFFFF","#FFFFFF","#FFFEFE","#FFFFFF","#FFFFFE","#FFFEFD","#FFE1D6","#FFFFFE","#FFFCFB","#FFE1D7","#FFFEFE","#FFD8CA","#FFF0EA","#FFFFFF","#FFCDBC","#FFFFFF","#FFFFFE","#FFFFFF","#FFEDE6","#FFBAA4","#FFD0BF","#FF9B7E","#FF6D4C","#FFD4C5","#FFB9A3","#FFD1C1","#FFD0C0","#FFB49D","#FFE7DF","#FFFDFD","#FFFBFA","#FFFFFF","#FFFFFF","#FFFFFE","#FFFFFF","#FFFFFF","#FFFFFF","#FFFBFA","#FFF6F3","#FFDCD0","#FFFDFC","#FFF6F3","#FFF9F7","#FFFEFE","#FFD6C7","#FFF3EF","#FFE8DF","#FFFEFE","#FFFFFF","#FFFDFC","#FFEEE8","#FFCFBF","#FFF3EF","#FFF7F5","#FFCEBD","#FFF8F5","#FFFFFF","#FFF6F2","#FFCDBC","#FFEBE4","#FF9C7F","#FFEAE2","#FFFCFB","#FFCBBA","#FFBEA9","#FFB199","#FFFBF9","#FFE9E1","#FFFAF8","#FFFFFF","#FF6F4D","#FFFFFE","#FFF5F2","#FFFFFF","#FFCAB8","#FFFBF9","#FFF6F3","#FFC0AB","#FFFAF8","#FFC3AF","#FFF8F5","#FFBEA8","#FFB9A3","#FFFBFA","#FFD0BF","#FFECE6","#FFE9E1","#FFFCFB","#FFFBFA","#FFF2EE","#FFF5F2","#FFECE6","#FF7857","#FFF3EE","#FFD2C2","#FFF5F1","#FFF5F2","#FFF9F7","#FFDCCF","#FFF3EE","#FFFDFC","#FFF4EF","#FFFEFE","#FFFDFD","#FFEDE7","#FF7352","#FFE5DB","#FFEDE6","#FFEAE2","#FFFFFF","#FFEBE4","#FFFCFB","#EC0C03","#FFFCFB","#FFEAE2","#FFFCFB","#FFF7F4","#FFFAF8","#FF6A49","#FFFBF9","#FFD6C8","#FFFFFF","#FFFCFB","#FFF6F3","#FFEAE3","#FFFDFC","#FFD4C5","#FFFEFD","#FFF5F2","#FFB49C","#FFD7C9","#FFE8E0","#FF7D5C","#FFD7C9","#FFF7F4","#FFD7C9","#FFE1D6","#FFDDD1","#FFF7F4","#FFEFE9","#FFDFD3","#FFFEFE","#FFEDE7","#FFCBB9","#FFEEE8","#FFC0AC","#FFF8F5","#FFFFFF","#FFFFFF","#FFDBCE","#FFF1EC","#FFD7C9","#FFF5F2","#FF9F83","#FFE6DC","#FFFEFE","#FFA084","#FFFDFC","#FFF7F4","#FFFEFD","#FFDACC","#FFF9F7","#FFF8F6","#FFFEFD","#FFE4DA","#FFCDBC","#FFFDFC","#FFEFE9","#FFFCFB","#FFFCFB","#FFDDD0","#FFFFFF","#FFF7F4","#FFFEFE","#FFEDE7","#FFD5C6","#FF8869","#FFEBE3","#FFF5F1","#FFE9E1","#FFFEFE","#FFDCD0","#FFF3EE","#FFEFE9","#FFFCFB","#FFFCFB","#FFFEFE","#FFFCFB","#FFFFFF","#FFF7F5","#000000","#FFFBFA","#FFF8F6","#FF9273","#FFFCFB","#FFF9F7","#FFFEFE","#FFF3EF","#FFF5F1","#FFFEFD","#FFFDFC","#FFD1C0","#FFC0AC","#FFF6F3","#FFF9F7","#FFE4DB","#FFE7DE","#FFB49C","#FFE0D5","#FFEDE7","#FFFFFE","#FFC3AF","#FF7857","#FFFEFE","#FFF8F6","#FFF4EF","#FFD0BF","#FF9273","#FFFBF9","#FF8A6B","#FFFFFF","#FFFEFE","#FF6E4D","#FFEDE7","#FFFCFB","#FFFFFF","#FF9C7F","#FFB198","#FFFBFA","#FFAC93","#FFFEFE","#FFFEFE","#FFAF96","#FFC6B3","#FFFEFE","#FFFBF9","#FF3118","#FFF2EE","#FFF9F7","#FFFDFC","#FFF5F2","#FFFCFB","#FFEDE6","#FFFEFE","#FFB69F","#FFFBFA","#FFFEFD","#FFFFFF","#FFFEFD","#FFFFFE","#FFE5DB","#FFFEFE","#FFFEFE","#FFFCFA","#FFE9E0","#FFEEE7","#FFDFD4","#FFEAE3","#FFE7DE","#FFFCFB","#FFFFFF","#FFC1AC","#FFFFFF","#FFFEFE","#FF8767","#FFEDE6","#FFE2D8","#FFFBFA","#FFFEFE","#FFFFFF","#FFFDFC","#FFDBCE","#FFFCFC","#FFF6F3","#FFEBE3","#FFFFFF","#FFFBFA","#FFE5DC","#FF6745","#FFBDA8","#FFF6F2","#FFF9F7","#FFC3AF","#FFFFFE","#FFFAF9","#FFF9F7","#FFF7F4","#FFC8B6","#FFFAF8","#FFF0EA","#FFFDFD","#FFFFFF","#FF9071","#FFE8E0","#FFEEE8","#FFD8CA","#FFF9F7","#FFFCFA","#FFFEFE","#FFFEFE","#FFD0C0","#FFEEE8","#FFFFFE","#FFFFFF","#FFFCFB","#FFEEE8","#FFFFFF","#FFFEFE","#FFFEFE","#FFF1EB","#FFFFFF","#FFFAF8","#FFFFFF","#FF8D6E","#FFFFFE","#FFFDFC","#FFFFFF","#FFFEFE","#FFFCFB","#FFFEFE","#FFFFFE","#FFFCFB","#FFFEFD","#FFFDFC","#FFFDFD","#FFDACD","#FFFCFB","#FFFDFD","#FFE6DE","#FFE9E1","#FFEEE7","#FF997C","#FFF6F2","#FFE8E0","#FFF4F0","#FFC2AD","#FFFFFF","#FF9C7F","#FFF8F6","#FFFEFD","#FFFAF9","#FFF6F3","#FFE8E0","#FFC0AB","#FFFBFA","#FFE2D8","#FFFFFF","#FFF1EC","#FFA084","#FFEDE6","#FFECE6","#FFEFE9","#FFF2EE","#FFFEFE","#FFB39B","#FFDFD4","#FFF1EC","#FFFFFF","#FFFFFF","#FFB39A","#FFFEFD","#FFF2ED","#FFFEFD","#FFB59D","#FFFFFF","#FFB299","#FFD0C0","#FFC6B3","#FFDCCF","#FFD5C7","#FFFBFA","#FFE0D4","#FFF3EE","#711A0C","#FFEFE9","#FFCEBD","#FFC5B1","#FFFEFD","#FFEDE7","#FFF6F3","#FFEFE9","#FFAC93","#FF9F82","#FFB29A","#FFC9B6","#FFD1C1","#FFFAF8","#FFFAF7","#FFF8F5","#FFF5F1","#FFF1EC","#FFFDFC","#FFE4DA","#FFF9F6","#FFFBFA","#FFE4DA","#FFDBCE","#FFAF96","#FFE1D6","#FFFDFC","#FFF4F0","#FFFDFC","#FFEEE8","#FFEDE7","#451609","#FFF6F3","#FFFEFD","#FFEAE2","#FFF9F6","#FFD5C7","#FFFDFD","#FFDDD2","#FFE7DF","#FFDDD1","#FFFFFF","#FFD8CA","#FFFFFE","#FFFFFF","#FFF5F1","#FFFDFD","#FFFDFC","#FFFFFF","#FFD8CA","#FFFFFF","#FF8969","#FFE0D5","#FFBAA3","#FFFDFC","#FFFFFF","#FFFFFF","#BA1909","#FFFFFF","#FFF5F1","#FFFFFF","#FFFDFC","#FFBBA5","#FFCEBE","#FFFFFF","#FFFCFB","#FFFEFD","#FFFFFF","#FFEDE7","#FFFEFE","#FFFFFE","#FFF7F4","#FFD5C7","#FFFEFD","#FFFFFF","#FFFEFE","#FFFDFC","#FFFFFF","#FFFFFF","#FFF9F7","#FF4829","#FFFFFE","#FFF8F5","#FFFFFF","#FFFDFC","#FF9E82","#FFC4B1","#FF8565","#FFFFFF","#FFFEFE","#811B0C","#FFFFFE","#FFFFFF","#FFFCFB","#FFFFFF","#FFD1C0","#FF8A6A","#FFFEFE","#FFFFFE","#FFDDD1","#FFF8F5"],"fillOpacity":0.5},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addLegend","args":[{"colors":["#FFFFFF , #FFC1AD 16.1352812979256%, #FF7F5F 32.2786342723384%, #FF1F0D 48.4219872467512%, #B01A0A 64.5653402211639%, #5F190B 80.7086931955767%, #180802 96.8520461699895%, #000000 "],"labels":["2,000","4,000","6,000","8,000","10,000","12,000"],"na_color":null,"na_label":"NA","opacity":1,"position":"bottomright","type":"numeric","title":"Covid-19 Cases","extra":{"p_1":0.161352812979256,"p_n":0.968520461699895},"layerId":null,"className":"info legend","group":null}]}],"limits":{"lat":[33.333921,35.765278],"lng":[-119.709567,-114.369722]}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div id="section" class="section level2 unnumbered">
+<h2></h2>
+<p><br></p>
+<p>Done!</p>
+<p><br> <br></p>
+<p><br> <br></p>
+</div>
+
+<p>Copyright &copy; 2020, Abigail Horn.</p>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
