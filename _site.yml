@@ -1,7 +1,7 @@
 name: "Tao-Website(finalProject)"
 output_dir: "."
 navbar:
-  title: "PM566 Final Project"
+  title: "PM566 Final Project: LA crime and covid-19"
   left:
     - text: "final_Project"
       href: index.html

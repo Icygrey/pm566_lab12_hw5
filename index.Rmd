@@ -64,8 +64,9 @@ In 2020, the covid-19 epidemic has swept the world, and the United States is no 
 
 # Data & API
 
- LA_raw_crime：The API comes from Los Angeles city data. The data collection includes all data from January 2020 to October 7, 2020. (https://data.lacity.org/resource/2nrs-mtv8.json)
- 
+ LA_raw_crime：The API comes from Los Angeles city data. The data collection includes all data from January 2017 to October 7, 2020. (https://data.lacity.org/resource/2nrs-mtv8.json)
+
+<br>
 
 
  LA_raw_covid：Including all the data from March 10, 2020 to October 7, 2020 in Los Angeles County. In order to facilitate the comparison of the impact of the emergence of covid-19 on the psychological and economic aspects of residents, which may lead to an increase in the crime rate, I Set the numbers of covid-19 data before March to 0. The data comes from County of Los Angeles Public Health. (https://raw.githubusercontent.com/Icygrey/pm566_lab12_hw5/main/latimes-place-totals.csv)
@@ -76,12 +77,14 @@ In 2020, the covid-19 epidemic has swept the world, and the United States is no 
 
 <br>
 
-# I. Workflow Overview
+# I. Workflow
 
 The basic workflow is as follows:
 
 1.Create a time series axis of crime frequency from 2017 to 2020 and compare them.
+<br>
 2.Create interactive hotmaps to find areas with high incidence of covid-19 and crime, and try to find connections.
+<br>
 3.Text mining to view the most frequent types of crimes in 2019 and 2020.
 
 <br>
@@ -173,7 +176,7 @@ library(leaflet)
 pal <- colorNumeric(palette = c("white","red","black"),domain = ll_freq$Freq)
 
 crime_map<-leaflet(ll_freq) %>%
-  addProviderTiles(providers$CartoDB.Positron)%>%
+  addProviderTiles(providers$Stamen.Toner)%>%
   addCircles(lng=~nlon,lat=~nlat,fillColor = ~pal,fillOpacity = 0.6,color = ~pal(Freq),
              label = paste("Crime frequency:",ll_freq$Freq,sep = ""),labelOptions =(noHide = F))%>%
   addLegend("bottomright", pal = pal, values = ~Freq,
