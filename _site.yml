@@ -1,12 +1,12 @@
-name: "my-website"
+name: "Tao-Website(finalProject)"
 output_dir: "."
 navbar:
   title: "PM566 Final Project"
   left:
-    - text: "Lab-12"
+    - text: "final_Project"
       href: index.html
-    - text: "HW-5"
-      href: HW5.html
+    - text: "lab12"
+      href: lab12.html
   right:
     - icon: fa-github fa-lg
       href: https://github.com/USCbiostats/PM566

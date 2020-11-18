@@ -3,6 +3,29 @@
 
 ## state-level population information from us_census_data available on GitHub repository:
 # https://github.com/COVID19Tracking/associated-data/tree/master/us_census_data
+library(rvest) 
+library(httr) 
+library(stringr)
+library(jsonlite)
+
+######final project
+la_raw_covid<-fread("https://raw.githubusercontent.com/Icygrey/pm566_lab12_hw5/main/LA_County_Covid19_persons_tested_date_table.csv")
+crime2019<- fread("https://raw.githubusercontent.com/Icygrey/pm566_lab12_hw5/main/crime2019.csv")
+crime2018<- fread("https://raw.githubusercontent.com/Icygrey/pm566_lab12_hw5/main/crime2018.csv")
+crime2017<- fread("https://raw.githubusercontent.com/Icygrey/pm566_lab12_hw5/main/crime2017.csv")
+text_2019<-read_csv("https://raw.githubusercontent.com/Icygrey/pm566_lab12_hw5/main/text_2019.csv")
+#########################
+
+
+la_raw_crime<-GET(
+  url="https://data.lacity.org/resource/2nrs-mtv8.json",
+  query = list(
+    "$limit"=147947)
+)
+
+la_raw_crime<-content(la_raw_crime,"text") %>% fromJSON()
+
+
 
 
 ######HW5

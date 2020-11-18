@@ -7,10 +7,6 @@ output:
         toc_float: TRUE
 ---
 
-<br>
-
-This is my LAB-12. I will showcase a few interactive visuals here.
-
 
 <br>
 
@@ -22,6 +18,15 @@ library(dplyr)
 library(plotly)
 library(DT)
 library(knitr)
+
+library(rvest) 
+library(httr) 
+library(stringr)
+library(jsonlite)
+library(ggplot2)
+library(lubridate)
+library(patchwork)
+
 
 # Initialize code chunk options
 opts_chunk$set(
@@ -47,61 +52,253 @@ opts_chunk$set(
 }
 ```
 
+<br>
+
+# Project Introduction
+
+In 2020, the covid-19 epidemic has swept the world, and the United States is no exception. In this study, I used the Los Angeles area as the research object to explore the changes in social security in Los Angeles under the covid-19 epidemic (the number of crime cases), and to understand which areas the covid-19 epidemic and the public security environment are worse.
+
+<br>
+
+----
+
+# Data & API
+
+ LA_raw_crime：The API comes from Los Angeles city data. The data collection includes all data from January 2020 to October 7, 2020. (https://data.lacity.org/resource/2nrs-mtv8.json)
+ 
+
+
+ LA_raw_covid：Including all the data from March 10, 2020 to October 7, 2020 in Los Angeles County. In order to facilitate the comparison of the impact of the emergence of covid-19 on the psychological and economic aspects of residents, which may lead to an increase in the crime rate, I Set the numbers of covid-19 data before March to 0. The data comes from County of Los Angeles Public Health. (https://raw.githubusercontent.com/Icygrey/pm566_lab12_hw5/main/latimes-place-totals.csv)
+
+<br>
+
+----
+
+<br>
+
+# I. Workflow Overview
+
+The basic workflow is as follows:
+
+1.Create a time series axis of crime frequency from 2017 to 2020 and compare them.
+2.Create interactive hotmaps to find areas with high incidence of covid-19 and crime, and try to find connections.
+3.Text mining to view the most frequent types of crimes in 2019 and 2020.
 
 <br>
 
 
-```{r plot1, class.source="code-r-small"}
+## 1.Create a time series
+
+
+```{r, class.source="code-r-small"}
+
 source("process_COVID_data.R")
-p1_scatter <- cv_states_today %>% 
-  plot_ly(x = ~pop_density, y = ~deathsper100k,
-          type = 'scatter', mode = 'markers', color = ~state,
-          size = ~population, sizes = c(5, 70), marker = list(sizemode='diameter', opacity=0.5),
-          hoverinfo = 'text',
-          text = ~paste( paste(state, ":", sep=""), paste(" Cases per 100k: ", per100k, sep="") , paste(" Deaths per 100k: ",
-                        deathsper100k, sep=""), sep = "<br>")) %>%
-  layout(title = "Population-normalized COVID-19 deaths vs. population density",
-                  yaxis = list(title = "Deaths per 100k"), xaxis = list(title = "Population Density"),
-         hovermode = "compare")
+# data pre-processing
+##covid
+#calculate the numbers of cumulative positive persons in the ending day of each day in 2020.
 
-# filter out "District of Columbia"
-cv_states_today_scatter <- cv_states_today %>% filter(state!="District of Columbia")
 
-p2_scatter <- cv_states_today_scatter %>% 
-  plot_ly(x = ~pop_density, y = ~deathsper100k,
-          type = 'scatter', mode = 'markers', color = ~state,
-          size = ~population, sizes = c(5, 70), marker = list(sizemode='diameter', opacity=0.5),
-          hoverinfo = 'text',
-          text = ~paste( paste(state, ":", sep=""), paste(" Cases per 100k: ", per100k, sep="") , paste(" Deaths per 100k: ",
-                        deathsper100k, sep=""), sep = "<br>")) %>%
-  layout(title = "Population-normalized COVID-19 deaths vs. population density",
-                  yaxis = list(title = "Deaths per 100k"), xaxis = list(title = "Population Density"),
-         hovermode = "compare")
+
+
+
+#####get "la_crime"
+la_raw_crime<-data.table(la_raw_crime)#change data.frame to model of data.table  /or directly use fread("csv..")
+#cumulative_criminal_persons
+
+#get  "la_crime_freq"
+la_crime_freq<-la_raw_crime[,ymd:=ymd(as.Date(la_raw_crime$date_rptd))]
+la_crime_freq<-data.table(data.frame(table(la_crime_freq$ymd),stringsAsFactors=F))
+la_crime_freq<-la_crime_freq[,cumulative_criminal_persons:=cumsum(la_crime_freq$Freq)]
+la_crime_freq<-la_crime_freq[,ymd:=ymd(la_crime_freq$Var1)]
+la_crime_freq<-la_crime_freq[0:279]
+
+
+
+
+
+crime17181920<-la_crime_freq[,cum2019:=crime2019$cum2019]
+crime17181920<-la_crime_freq[,cum2018:=crime2018$cum2018]
+crime17181920<-la_crime_freq[,cum2017:=crime2017$cum2017]
+
+
+
+fig <- plot_ly(crime17181920, x = ~ymd, y = ~cumulative_criminal_persons, name = 'cum2020', type = 'scatter', mode = 'lines') 
+fig <- fig %>% add_trace(y = ~cum2019, name = 'cum2019', mode = 'lines') 
+fig <- fig %>% add_trace(y = ~cum2018, name = 'cum2018', mode = 'lines') 
+fig <- fig %>% add_trace(y = ~cum2017, name = 'cum2017', mode = 'lines') 
 ```
+The plot shows blow.
+```{r}
+fig
+```
+
+By comparing the Los Angeles crime data for 4 years (2017-2020), it can be clearly found that the number of Los Angeles crimes in 2020 has decreased significantly, especially after the covid-19 outbreak and public panic. (From February to March, the blue line starts to deviate from the other lines.)
 
 <br>
 
-## table {.tabset}
 
-Create tabs to display each figure
 
-### Scatterplot: with DC
 
-```{r p1}
-p1_scatter
+
+## 2.Create interactive hotmaps
+
+```{r, class.source="code-r-small"}
+##the frequency of crime：
+
+la_crime<-la_raw_crime[,ymd:=ymd(as.Date(la_raw_crime$date_rptd))]
+
+#round procss of lat and lon
+la_crime<-la_raw_crime[,nlat:=round(as.numeric(lat),2)]
+la_crime[,nlon:=round(as.numeric(la_crime$lon),2)]
+
+##the frequency of crime in 2020
+ll_freq<-la_crime[,ll:=paste(nlon,nlat,sep = ",")] 
+ll_freq<-data.table(data.frame(table(ll_freq$ll),stringsAsFactors=F))
+
+
+##extract lon & lat from text.
+nlon2<-data.frame(as.numeric(str_extract(ll_freq$Var1,
+                   "-[[:digit:]]+.[[:digit:]]+"
+                   )))
+
+nlat2<-data.frame(as.numeric(str_extract(ll_freq$Var1,
+                   "(?<=,)[[:digit:]]+.[[:digit:]]+|(?<=,)[[:digit:]]+"
+                   )))
+
+ll_freq[,nlon:=nlon2]
+ll_freq[,nlat:=nlat2]
+
+## Los Angeles Crime distributed MAP in 2020
+library(leaflet)
+pal <- colorNumeric(palette = c("white","red","black"),domain = ll_freq$Freq)
+
+crime_map<-leaflet(ll_freq) %>%
+  addProviderTiles(providers$CartoDB.Positron)%>%
+  addCircles(lng=~nlon,lat=~nlat,fillColor = ~pal,fillOpacity = 0.6,color = ~pal(Freq),
+             label = paste("Crime frequency:",ll_freq$Freq,sep = ""),labelOptions =(noHide = F))%>%
+  addLegend("bottomright", pal = pal, values = ~Freq,
+    title = "Crime Cases",
+    opacity = 1
+  )
+
+##############################################
+
+
+
+la_covid<-covid[county %in% c("Los Angeles")]
+la_covid<-la_covid[date=="2020-10-11"]
+la_covid<-la_covid[,cases:=as.numeric(la_covid$confirmed_cases)]
+
+
+library(leaflet)
+##popups
+content <- paste(sep = "<br/>",
+  "<b><a href='http://www.samurainoodle.com'>Samurai Noodle</a></b>",
+  "606 5th Ave. S",
+  "Seattle, WA 98138"
+)
+
+
+pal <- colorNumeric(palette = c("white","red","black"),domain = la_covid$cases)
+
+
+covid_map<-leaflet(la_covid) %>%
+  addProviderTiles(providers$Stamen.Toner)%>%
+  addCircleMarkers(lng=~x,lat=~y,color = ~pal(cases),
+                    stroke = FALSE,radius=8, fillOpacity = 0.5,
+                   label=paste(la_covid$place,"(cases):",la_covid$confirmed_cases, sep = ""),
+                   labelOptions =(noHide = F))%>%
+  addLegend("bottomright", pal = pal, values = ~cases, 
+            title = "Covid-19 Cases",
+            opacity = 1)
+
 ```
 
-### Scatterplot: without DC
 
-```{r p2}
-p2_scatter
+
+### Crime hotmap in LA
+
+```{r}
+crime_map
+```
+
+### Covid-19 confirmed population in LA
+
+```{r}
+covid_map
 ```
 
 ## {-}
 
 <br>
 
-Done!
+Through the comparison of the two hotmaps, we can find that downtown and central-southern Los Angeles are more likely to become covid-19 outbreak points and have a higher frequency of crime in 2020.
+<br>
+
+
+
+
+## 3.Text mining
+
+
+```{r plot1, class.source="code-r-small"}
+#2019
+text_2019<-data.frame(str_extract(text_2019$desc,
+                             "[[:alpha:]]+"
+                             ))
+data2019<-data.table(table(text_2019) %>% sort(decreasing = TRUE))
+
+
+##text mining 2020
+text_2020<-data.frame(str_extract(la_crime$crm_cd_desc,
+                             "[[:alpha:]]+"
+                             ))
+data2020<-data.table(table(text_2020) %>% sort(decreasing = TRUE))
+
+
+table2019<-data2019 %>%
+  top_n(20,N) %>%     #top_n(x,n,wt)  ...x has been piped before (x = token)
+  ggplot(aes(fct_reorder(text_2019,N) ,N)) + geom_col() + coord_flip() 
+
+table2020<-data2020 %>%
+  top_n(20,N) %>%     #top_n(x,n,wt)  ...x has been piped before (x = token)
+  ggplot(aes(fct_reorder(text_2020,N) ,N)) + geom_col() + coord_flip() 
+
+
+
+```
+
+
+
+
+
+## {.tabset}
+
+### Types of crime ranking in 2020
+
+```{r p1}
+table2020
+```
+
+### Types of crime ranking in 2019
+
+```{r p2}
+table2019
+```
+
+## {-}
+
+It can be found that the frequency of economic crimes (theft, burgalary) in 2019 and 2020 both occupy the first and second places.
+
+<br>
+
+# Conclusion:
+
+The crime frequency in Los Angeles in 2020 has been significantly reduced since February compared to previous years. This may be because the outbreak of covid-19 has allowed more residents to choose not to go out, thus reducing the risk of harm. In addition, through the comparison of heat maps, communities with densely populated (downtown) and low-income groups (central-southern Los Angeles) are more likely to become covid-19 outbreak points and have a higher frequency of crime. Finally, through text mining, we found that crimes in the past two years were concentrated in economic cases.
+1
+
+
+
 
 <br>
 <br>
