@@ -1,17 +1,17 @@
 name: "Tao-Website(finalProject)"
 output_dir: "."
 navbar:
-  title: "PM566 Final Project: LA crime and covid-19"
+  title: "Tao's Website (Final Project)"
   left:
-    - text: "final_Project"
+    - text: "Research Project"
       href: index.html
     - text: "lab12"
       href: lab12.html
   right:
     - icon: fa-github fa-lg
       href: https://github.com/USCbiostats/PM566
-    - text: "PM566 Home"
-      href: https://elastic-khorana-70231e.netlify.app/
+    - text: "Download Full PDF Report"
+      href: pm566_final_report_th.pdf
 output:
   html_document:
     theme: cosmo

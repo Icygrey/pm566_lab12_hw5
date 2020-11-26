@@ -10,7 +10,7 @@ output:
 
 <br>
 
-This is my LAB-12. I will showcase a few interactive visuals here.
+This is my LAB-12.
 
 
 <br>

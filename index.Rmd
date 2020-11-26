@@ -1,11 +1,13 @@
 ---
-title: "PM566 Final Project"
+title: "Probe into relationship between Covid-19 and Crime in LA"
 author: "Tao Huang"
 output: 
     html_document:
         toc: TRUE
         toc_float: TRUE
 ---
+
+
 
 
 <br>
@@ -56,7 +58,7 @@ opts_chunk$set(
 
 # Project Introduction
 
-In 2020, the covid-19 epidemic has swept the world, and the United States is no exception. In this study, I used the Los Angeles area as the research object to explore the changes in social security in Los Angeles under the covid-19 epidemic (the number of crime cases), and to understand which areas the covid-19 epidemic and the public security environment are worse.
+In 2020, the covid-19 epidemic has swept the world, and the United States is no exception. The impact of this epidemic is all-round, whether economy, politics, diplomacy, environment, or even urban security have all been affected a lot. Los Angeles is the second largest city in the United States and the largest city in California. It is known for its ethnic diversity and economic development. Therefore, I think Los Angeles is a representative American city, and decided to choose Los Angeles as a key research object to explore the urban security situation under the covid-19.
 
 <br>
 
@@ -98,12 +100,14 @@ Clean the data, extract all the latitude and longitude in the data set, then app
 Use regular expressions to extract the keywords in the crime description, then extract the most frequent words, and use ggplot to make a bar graph.
 
 
+
 <br>
-<br>
+
+
 ----
 
-# Results
 
+# Results
 <br>
 
 ## 1.Create a time series
@@ -151,7 +155,7 @@ The plot shows blow.
 fig
 ```
 
-By comparing the Los Angeles crime data for 4 years (2017-2020), it can be clearly found that the number of Los Angeles crimes in 2020 has decreased significantly, especially after the covid-19 outbreak and public panic. (From February to March, the blue line starts to deviate from the other lines.)
+By comparing the frequency of cumulative crime in LA for 4 years (2017-2020), it can be clearly found that the frequency of cumulative crime in LA in 2020 (blue line) has decreased significantly, especially after the covid-19 outbreak. (From February to March, the blue line starts to deviate from the other lines.)
 
 <br>
 
@@ -159,7 +163,7 @@ By comparing the Los Angeles crime data for 4 years (2017-2020), it can be clear
 
 
 
-## 2.Create interactive hotmaps
+## 2.Create interactive Heat Maps
 
 ```{r, class.source="code-r-small"}
 ##the frequency of crime：
@@ -235,13 +239,14 @@ covid_map<-leaflet(la_covid) %>%
 
 
 
-### Crime hotmap in LA
+### Crime Heat Map in LA
 
 ```{r}
 crime_map
 ```
 
-### Covid-19 confirmed population in LA
+
+### Covid-19 confirmed population Heat Map in LA
 
 ```{r}
 covid_map
@@ -251,15 +256,14 @@ covid_map
 
 <br>
 
-Through the comparison of the two hotmaps, we can find that downtown and central-southern Los Angeles are more likely to become covid-19 outbreak points and have a higher frequency of crime in 2020.
+Through the comparison of the two Heat Maps, we can find that downtown and central-southern Los Angeles are more likely to become covid-19 outbreak points and have a higher frequency of crime in 2020.(See the dark red and black areas in the map)
 <br>
 
 
-
+<br>
 
 ## 3.Text mining
-
-
+<br>
 ```{r plot1, class.source="code-r-small"}
 #2019
 text_2019<-data.frame(str_extract(text_2019$desc,
@@ -273,7 +277,6 @@ text_2020<-data.frame(str_extract(la_crime$crm_cd_desc,
                              "[[:alpha:]]+"
                              ))
 data2020<-data.table(table(text_2020) %>% sort(decreasing = TRUE))
-
 
 table2019<-data2019 %>%
   top_n(20,N) %>%     #top_n(x,n,wt)  ...x has been piped before (x = token)
@@ -306,15 +309,55 @@ table2019
 ```
 
 ## {-}
-
-It can be found that the frequency of economic crimes (theft, burgalary) in 2019 and 2020 both occupy the first and second places.
+From the figures above, It can be found that the frequency of economic crimes (Theft, Burglary) in 2019 and 2020 both occupy the first and second places.
 
 <br>
 
-# Conclusion:
 
-The crime frequency in Los Angeles in 2020 has been significantly reduced since February compared to previous years. This may be because the outbreak of covid-19 has allowed more residents to choose not to go out, thus reducing the risk of harm. In addition, through the comparison of heat maps, communities with densely populated (downtown) and low-income groups (central-southern Los Angeles) are more likely to become covid-19 outbreak points and have a higher frequency of crime. Finally, through text mining, we found that crimes in the past two years were concentrated in economic cases.
-1
+
+<br>
+
+## 4. Create overlapped barplot
+<br>
+
+```{R, class.source="code-r-small"}
+
+data2020$percent<-round(data2020$N/sum(data2020$N),3) 
+data2019$percent<-round(data2019$N/sum(data2019$N),3)
+
+
+test<-merge(data2020,data2019,by.x="text_2020",by.y ="text_2019") %>% arrange(desc(N.x))
+
+
+fig_percent <- plot_ly(test, alpha=0.5,x = ~text_2020,y = ~percent.x, name = '2020 Crime percent',type = 'bar')
+fig_percent <- fig_percent %>% add_trace(y = ~percent.y, name = '2019 Crime percent',type = 'bar')  %>% layout(barmode = "overlay")
+
+```
+
+### Compare the frequency of various crimes in 2019 and 2020
+
+```{r}
+fig_percent
+```
+
+<br>
+
+In 2020, Los Angeles economic crimes (Theft, Burglary) accounted for a decrease in the proportion of total crimes in the year compared with 2019. I guess that this may be due to the federal government's relief payments, large-scale shops closed, and people reduced their outings, thus avoiding theft and robbery.
+<br>
+In addition, we can clearly see the decrease in the frequency and proportion of battery crime, and the frequency of occurrence has dropped from the third place in 2019 to the fifth place. On the contrary, the frequency of vehicle occurrence has risen to third place. This is consistent with our impression that during the epidemic, people prefer to use private cars to travel, which may indirectly increase the number of traffic accidents.
+
+<br>
+
+----
+
+
+# Conclusion
+<br>
+
+
+The crime frequency in Los Angeles in 2020 has been significantly reduced since February compared to previous years. I guess, this may be because the outbreak of covid-19 has allowed more residents to choose not to go out, thus reducing the risk of harm. In addition, through the comparison of heat maps, communities with densely populated (downtown) and low-income groups (central-southern Los Angeles) are more likely to become covid-19 outbreak points and have a higher frequency of crime. 
+
+Besides, through text mining, we found that crimes in the past two years were concentrated in economic cases (Theft and Burglary), and In 2020, Los Angeles economic crimes accounted for a decrease in the proportion of total crimes in the year compared with 2019. I guess that this may be due to the large-scale shops closed, and people reduced their outings, thus avoiding theft and robbery. And Federal government relief payments may also have played an important role.
 
 
 
