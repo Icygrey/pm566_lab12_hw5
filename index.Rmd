@@ -82,24 +82,33 @@ LA_raw_covid：Including all the data from March 10, 2020 to October 7, 2020 in 
 # Method and Process
 <br>
 
-The Method and Process is as follows:
+Data Preparation：
+<br>
+First of all, as the most basic and most important step in the data analysis step — data cleaning, I clean and organize the data of the LA_raw_crime data set, which involves some more cumbersome steps: 
+<br>
+1. standardize the format of the time variable. 
+<br>
+2. Extract the latitude and longitude and perform approximate processing.
+<br>
+3. Calculate the daily crime frequency and cumulative crime frequency.
+<br>
+4. Use regular expressions to extract the type of crime and calculate the frequency. Similarly, our LA_raw_covid data set performs similar processing.
+<br>
 
-1.Create a time series axis of crime frequency from 2017 to 2020 and compare them: 
 <br>
-Extract the data of 2017, 2018, 2019 and 2020 from Lacity.og, clean and organize the data, then use data.table to calculate the cumulative crime frequency, and finally use plotly to make a time series graph.
+Process：
 <br>
+Then, I tried to simultaneously display four time series curves on one plot to compare the difference in cumulative crime frequency from 2017 to 2020. Considering that interactive charts are easier to express information, here I use the “Plotly” package to draw, and set pop-ups at each point to display the frequency of the corresponding date. (See figure below)
 <br>
-2.Create interactive hotmaps to find areas with high incidence of covid-19 and crime, and try to find connections: 
-<br>
-Clean the data, extract all the latitude and longitude in the data set, then approximate the latitude and longitude, calculate the frequency, and finally use leaflet to make a map.
 <br>
 
+Next, I used the “Leaflet” package to draw two Head maps of the Los Angeles area. The first one is the Head maps of the crime frequency, and the second one is the Head maps of the positive cases of covid-19. I use gradation of color to indicate the severity of different areas. The darker red area indicates the greater the frequency. In order to facilitate and intuitively obtain data, I set up a pop-up in each area to display the frequency of covid-19 positive patients in the corresponding area. 
 <br>
-3.Text mining to view the most frequent types of crimes in 2019 and 2020: 
 <br>
-Use regular expressions to extract the keywords in the crime description, then extract the most frequent words, and use ggplot to make a bar graph.
 
+Finally, I drew three bar graphs to compare the changes in crime types in 2020 and 2019. In the first and second plots, I directly draw the bar graphs according to the frequency of crime types in 2019 and 2020 in descending order, so that we can observe which crime types occur more frequently. (See figures 4 and 5). In order to represent the third bar graph well, I redesigned the data set behind it. I used proportion instead of frequency as the y-axis, and used overlapping bar graphs to compare and show the rise and fall of the proportion of various crimes in 2019 and 2020. 
 
+<br>
 
 <br>
 
