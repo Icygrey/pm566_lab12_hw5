@@ -1,0 +1,227 @@
+---
+title: "Assignment 5-Midterm project visualization"
+author: "Tao Huang"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
+---
+
+
+<br>
+
+This is my assignment-5.
+
+
+<br>
+
+```{r setup, message=FALSE, echo=FALSE, warning=FALSE}
+library(data.table)
+library(tidyverse)
+library(dplyr)
+library(plotly)
+library(DT)
+library(knitr)
+
+library(rvest) 
+library(httr) 
+library(stringr)
+library(jsonlite)
+library(ggplot2)
+library(lubridate)
+library(patchwork)
+
+# Initialize code chunk options
+opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  eval=TRUE,
+  echo = FALSE,
+  cache = FALSE,
+  fig.width = 7, 
+  fig.align = 'center',
+  fig.asp = 0.618,
+  out.width = "700px",
+  class.source = "code-r")
+```
+
+```{css, echo = FALSE}
+.code-r { /* Code block */
+  font-size: 15px;
+}
+
+.code-r-small { /* Code block */
+  font-size: 10px;
+}
+```
+<br>
+```{r}
+source("process_COVID_data.R")
+```
+
+<br>
+
+
+<br>
+
+## 
+
+
+```{r, class.source="code-r-small"}
+
+# data pre-processing
+##covid
+#calculate the numbers of cumulative positive persons in the ending day of each day in 2020.
+
+
+
+
+
+#####get "la_crime"
+la_raw_crime<-data.table(la_raw_crime)#change data.frame to model of data.table  /or directly use fread("csv..")
+#cumulative_criminal_persons
+
+#get  "la_crime_freq"
+la_crime_freq<-la_raw_crime[,ymd:=ymd(as.Date(la_raw_crime$date_rptd))]
+la_crime_freq<-data.table(data.frame(table(la_crime_freq$ymd),stringsAsFactors=F))
+la_crime_freq<-la_crime_freq[,cumulative_criminal_persons:=cumsum(la_crime_freq$Freq)]
+la_crime_freq<-la_crime_freq[,ymd:=ymd(la_crime_freq$Var1)]
+la_crime_freq<-la_crime_freq[0:279]
+
+
+
+
+
+crime17181920<-la_crime_freq[,cum2019:=crime2019$cum2019]
+crime17181920<-la_crime_freq[,cum2018:=crime2018$cum2018]
+crime17181920<-la_crime_freq[,cum2017:=crime2017$cum2017]
+
+
+
+fig <- plot_ly(crime17181920, x = ~ymd, y = ~cumulative_criminal_persons, name = 'cum2020', type = 'scatter', mode = 'lines') 
+fig <- fig %>% add_trace(y = ~cum2019, name = 'cum2019', mode = 'lines') 
+fig <- fig %>% add_trace(y = ~cum2018, name = 'cum2018', mode = 'lines') 
+fig <- fig %>% add_trace(y = ~cum2017, name = 'cum2017', mode = 'lines') 
+fig
+```
+
+
+
+
+<br>
+
+
+
+
+
+## Heat Maps
+
+```{r, class.source="code-r-small"}
+##the frequency of crime：
+
+la_crime<-la_raw_crime[,ymd:=ymd(as.Date(la_raw_crime$date_rptd))]
+
+#round procss of lat and lon
+la_crime<-la_raw_crime[,nlat:=round(as.numeric(lat),2)]
+la_crime[,nlon:=round(as.numeric(la_crime$lon),2)]
+
+##the frequency of crime in 2020
+ll_freq<-la_crime[,ll:=paste(nlon,nlat,sep = ",")] 
+ll_freq<-data.table(data.frame(table(ll_freq$ll),stringsAsFactors=F))
+
+
+##extract lon & lat from text.
+nlon2<-data.frame(as.numeric(str_extract(ll_freq$Var1,
+                   "-[[:digit:]]+.[[:digit:]]+"
+                   )))
+
+nlat2<-data.frame(as.numeric(str_extract(ll_freq$Var1,
+                   "(?<=,)[[:digit:]]+.[[:digit:]]+|(?<=,)[[:digit:]]+"
+                   )))
+
+ll_freq[,nlon:=nlon2]
+ll_freq[,nlat:=nlat2]
+
+## Los Angeles Crime distributed MAP in 2020
+library(leaflet)
+pal <- colorNumeric(palette = c("white","red","black"),domain = ll_freq$Freq)
+
+crime_map<-leaflet(ll_freq) %>%
+  addProviderTiles(providers$Stamen.Toner)%>%
+  addCircles(lng=~nlon,lat=~nlat,fillColor = ~pal,fillOpacity = 0.6,color = ~pal(Freq),
+             label = paste("Crime frequency:",ll_freq$Freq,sep = ""),labelOptions =(noHide = F))%>%
+  addLegend("bottomright", pal = pal, values = ~Freq,
+    title = "Crime Cases",
+    opacity = 1
+  )
+
+##############################################
+
+
+
+la_covid<-covid[county %in% c("Los Angeles")]
+la_covid<-la_covid[date=="2020-10-11"]
+la_covid<-la_covid[,cases:=as.numeric(la_covid$confirmed_cases)]
+
+
+library(leaflet)
+##popups
+content <- paste(sep = "<br/>",
+  "<b><a href='http://www.samurainoodle.com'>Samurai Noodle</a></b>",
+  "606 5th Ave. S",
+  "Seattle, WA 98138"
+)
+
+
+pal <- colorNumeric(palette = c("white","red","black"),domain = la_covid$cases)
+
+
+covid_map<-leaflet(la_covid) %>%
+  addProviderTiles(providers$Stamen.Toner)%>%
+  addCircleMarkers(lng=~x,lat=~y,color = ~pal(cases),
+                    stroke = FALSE,radius=8, fillOpacity = 0.5,
+                   label=paste(la_covid$place,"(cases):",la_covid$confirmed_cases, sep = ""),
+                   labelOptions =(noHide = F))%>%
+  addLegend("bottomright", pal = pal, values = ~cases, 
+            title = "Covid-19 Cases",
+            opacity = 1)
+
+```
+
+
+
+
+### Crime Heat Map in LA
+
+```{r}
+crime_map
+```
+
+
+### Covid-19 confirmed population Heat Map in LA
+
+```{r}
+covid_map
+```
+
+## {-}
+
+<br>
+
+Done!
+
+<br>
+<br>
+
+ 
+
+
+
+
+
+
+
+<br>
+<br>
